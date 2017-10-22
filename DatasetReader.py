@@ -65,17 +65,29 @@ class DatasetReader(Dataset):
         return self.dataset_len
 
     def __getitem__(self, index):
+
+        # Read images
         X_np = cv2.imread(self.input[index])
         Y_np = cv2.imread(self.target[index])
 
+        # Swap channels
+        X_np = np.rollaxis(X_np,2,0)
+        Y_np = np.rollaxis(Y_np,2,0)
+
+        # Transform images
         if self.transformer is not None:
             X_np = self.transformer(X_np)
             Y_np = self.transformer(Y_np)
 
+        # Create tensors
         X_tensor = torch.from_numpy(X_np)
         Y_tensor = torch.from_numpy(Y_np)
 
         return X_tensor, Y_tensor
+
+    def get_image_shape(self):
+        X,Y = self[0]
+        return X.shape,Y.shape
 
 
 def main():
@@ -92,12 +104,15 @@ def main():
     log.info("Accessing via Dataloader")
 
     train_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=2, shuffle=True)
+        dataset, batch_size=1, shuffle=True)
 
-    for batch in train_loader:
-        x_train, y_train = batch
-        print(x_train.shape)
-        print(y_train.shape)
+    log.info(dataset.get_image_shape())
+   
+
+    # for batch in train_loader:
+    #     x_train, y_train = batch
+    #     log.info(x_train.shape)
+    #     log.info(y_train.shape)
 
 if __name__ == "__main__":
     main()

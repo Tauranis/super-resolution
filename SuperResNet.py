@@ -24,12 +24,65 @@
 # SOFTWARE.
 
 import torch
+import torch.nn.functional as F
+from torch.autograd import Variable
 import numpy as np
 
+from Logging import log
+
+
 class SuperResNet(torch.nn.Module):
+    """
+    Super Resolution Network
+    """
 
     def __init__(self):
-        pass
+        """
+        Create conv layers
+        """
+        super(SuperResNet, self).__init__()
 
-    def forward(self,x)
-        pass
+        self.conv1_3x3 = torch.nn.Conv2d(3, 10, kernel_size=3)
+        self.conv2_3x3 = torch.nn.Conv2d(10, 10, kernel_size=3)
+        self.conv3_1x1 = torch.nn.Conv2d(10, 10, kernel_size=1)
+        self.drop1 = torch.nn.Dropout2d(0.3)
+
+        self.conv4_3x3 = torch.nn.Conv2d(10, 20, kernel_size=3)
+        self.conv5_3x3 = torch.nn.Conv2d(20, 20, kernel_size=3)
+        self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
+        self.drop2 = torch.nn.Dropout2d(0.3)
+
+    def _aggregate_channels(self, input):
+        r = input.mean(dim=2)
+        return r
+
+    def forward(self, input):
+        log.info(input.size())
+        x = F.relu(self.conv1_3x3(input))
+        x = F.relu(self.conv2_3x3(x))
+        x = F.relu(self.conv3_1x1(x))
+        x = self.drop1(x)
+
+        x = F.relu(self.conv4_3x3(x))
+        x = F.relu(self.conv5_3x3(x))
+        x = F.relu(self.conv6_1x1(x))
+        x = self.drop2(x)
+
+        x = self._aggregate_channels(x)
+
+        return x
+
+
+def main():
+
+    srn = SuperResNet()
+    #OBS: Pytorch is channels first (batch_size,n_channels,width,height)
+    input_sample = Variable(torch.from_numpy(
+        np.random.rand(1, 3,300, 300)).float(), requires_grad=False)
+
+    output = srn.forward(input_sample)
+    log.info(output.size())
+
+
+if __name__ == "__main__":
+    main()
