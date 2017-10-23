@@ -54,14 +54,14 @@ def TrainSuperResNet(batch_size, epochs, input_list, target_list):
             #     target = target.cuda()
 
             input_batch = Variable(input_batch.float(), requires_grad=False)
-            log.info("Input shape: {}".format(input_batch.size()))
+            #log.info("Input shape: {}".format(input_batch.size()))
             target = Variable(target.float(), requires_grad=False)
 
             Y_pred = model(input_batch)
             loss = loss_fn(Y_pred, target)
 
             optimzer.zero_grad()
-            loss.backwards()
+            loss.backward()
             optimzer.step()
 
             log.info("Epoch: {} Batch ID: {} Loss: {}".format(

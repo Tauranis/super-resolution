@@ -53,7 +53,11 @@ class SuperResNet(torch.nn.Module):
         self.drop2 = torch.nn.Dropout2d(0.3)
 
     def _aggregate_channels(self, input):
-        r = input.mean(dim=1)
+        #print("SIZE: {}".format(input[:,0:3,:,:].size()))
+        #r = input.mean(dim=1) 
+        # TODO: do aggregation. this is just a test
+        r = input[:,0:3,:,:]
+        
         return r
 
     def forward(self, input):

@@ -73,7 +73,8 @@ class DatasetReader(Dataset):
         #TODO: remover o resize, é só teste
         X_np =  cv2.resize(X_np,(300,300))
         Y_np =  cv2.resize(Y_np,(296,296))
-
+        
+        
         # Transform to float and divide by 255
         X_np = X_np.astype(np.float)/255
         Y_np = Y_np.astype(np.float)/255
