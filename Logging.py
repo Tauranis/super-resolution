@@ -4,5 +4,5 @@
 import logging
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("Super Resolution")
+log = logging.getLogger("Super Resolution CNN")
 log.setLevel(logging.INFO)

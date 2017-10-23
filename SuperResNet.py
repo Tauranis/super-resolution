@@ -53,20 +53,19 @@ class SuperResNet(torch.nn.Module):
         self.drop2 = torch.nn.Dropout2d(0.3)
 
     def _aggregate_channels(self, input):
-        r = input.mean(dim=2)
+        r = input.mean(dim=1)
         return r
 
     def forward(self, input):
-        log.info(input.size())
         x = F.relu(self.conv1_3x3(input))
         x = F.relu(self.conv2_3x3(x))
         x = F.relu(self.conv3_1x1(x))
         x = self.drop1(x)
 
-        x = F.relu(self.conv4_3x3(x))
-        x = F.relu(self.conv5_3x3(x))
-        x = F.relu(self.conv6_1x1(x))
-        x = self.drop2(x)
+        # x = F.relu(self.conv4_3x3(x))
+        # x = F.relu(self.conv5_3x3(x))
+        # x = F.relu(self.conv6_1x1(x))
+        # x = self.drop2(x)
 
         x = self._aggregate_channels(x)
 

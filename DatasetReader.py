@@ -70,6 +70,14 @@ class DatasetReader(Dataset):
         X_np = cv2.imread(self.input[index])
         Y_np = cv2.imread(self.target[index])
 
+        #TODO: remover o resize, é só teste
+        X_np =  cv2.resize(X_np,(300,300))
+        Y_np =  cv2.resize(Y_np,(296,296))
+
+        # Transform to float and divide by 255
+        X_np = X_np.astype(np.float)/255
+        Y_np = Y_np.astype(np.float)/255
+
         # Swap channels
         X_np = np.rollaxis(X_np,2,0)
         Y_np = np.rollaxis(Y_np,2,0)
@@ -87,7 +95,7 @@ class DatasetReader(Dataset):
 
     def get_image_shape(self):
         X,Y = self[0]
-        return X.shape,Y.shape
+        return X.size(),Y.size()
 
 
 def main():
@@ -100,6 +108,7 @@ def main():
     log.info("Accessing single sample")
     log.info(dataset[0][0].shape)
     log.info(dataset[0][1].shape)
+    log.info(dataset[0][0][0,0,0])
 
     log.info("Accessing via Dataloader")
 
