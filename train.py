@@ -34,10 +34,17 @@ from Logging import log
 
 
 def TrainSuperResNet(batch_size, epochs, input_list, target_list):
+    """
+    """
     #TODO: transformer
     #TODO: cuda
 
+    use_gpu = torch.cuda.is_available()
+
     model = SuperResNet()
+    if use_gpu:
+        model = model.cuda()
+
     dataset = DatasetReader(input_list, target_list, None)
     train_loader = DataLoader(
         dataset=dataset, batch_size=batch_size, shuffle=True)
@@ -49,9 +56,9 @@ def TrainSuperResNet(batch_size, epochs, input_list, target_list):
     for e in range(epochs):
         for batch_idx, (input_batch, target) in enumerate(train_loader):
 
-            # if torch.cuda.is_available():
-            #     input_batch = input_batch.cuda()
-            #     target = target.cuda()
+            if use_gpu:
+                input_batch = input_batch.cuda()
+                target = target.cuda()
 
             input_batch = Variable(input_batch.float(), requires_grad=False)
             #log.info("Input shape: {}".format(input_batch.size()))

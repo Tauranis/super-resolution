@@ -71,7 +71,7 @@ class DatasetReader(Dataset):
         Y_np = cv2.imread(self.target[index])
 
         #TODO: remover o resize, é só teste
-        X_np =  cv2.resize(X_np,(300,300))
+        #X_np =  cv2.resize(X_np,(300,300))
         Y_np =  cv2.resize(Y_np,(296,296))
         
         
@@ -101,8 +101,8 @@ class DatasetReader(Dataset):
 
 def main():
     dataset = DatasetReader(
-        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/input_dataset.txt",
-        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/target_dataset_2x.txt")
+        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/vgg_flowers/input_list.txt",
+        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/vgg_flowers/target_list.txt")
 
     log.info("Dataset size: {}".format(len(dataset)))
 

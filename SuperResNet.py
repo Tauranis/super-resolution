@@ -44,21 +44,13 @@ class SuperResNet(torch.nn.Module):
 
         self.conv1_3x3 = torch.nn.Conv2d(3, 10, kernel_size=3)
         self.conv2_3x3 = torch.nn.Conv2d(10, 10, kernel_size=3)
-        self.conv3_1x1 = torch.nn.Conv2d(10, 10, kernel_size=1)
+        self.conv3_1x1 = torch.nn.Conv2d(10, 3, kernel_size=1)
         self.drop1 = torch.nn.Dropout2d(0.3)
 
         self.conv4_3x3 = torch.nn.Conv2d(10, 20, kernel_size=3)
         self.conv5_3x3 = torch.nn.Conv2d(20, 20, kernel_size=3)
         self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
         self.drop2 = torch.nn.Dropout2d(0.3)
-
-    def _aggregate_channels(self, input):
-        #print("SIZE: {}".format(input[:,0:3,:,:].size()))
-        #r = input.mean(dim=1) 
-        # TODO: do aggregation. this is just a test
-        r = input[:,0:3,:,:]
-        
-        return r
 
     def forward(self, input):
         x = F.relu(self.conv1_3x3(input))
@@ -70,8 +62,6 @@ class SuperResNet(torch.nn.Module):
         # x = F.relu(self.conv5_3x3(x))
         # x = F.relu(self.conv6_1x1(x))
         # x = self.drop2(x)
-
-        x = self._aggregate_channels(x)
 
         return x
 
