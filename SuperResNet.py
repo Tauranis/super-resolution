@@ -26,6 +26,7 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
+from torch.nn.modules import padding
 import numpy as np
 
 from Logging import log
@@ -52,9 +53,16 @@ class SuperResNet(torch.nn.Module):
         self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
         self.drop2 = torch.nn.Dropout2d(0.3)
 
+        self.padding_3x3 = torch.nn.ZeroPad2d(1)
+
     def forward(self, input):
-        x = F.relu(self.conv1_3x3(input))
-        x = F.relu(self.conv2_3x3(x))
+        """
+        Perform network forwarding
+
+        OBS: padding is applied on 3x3 convolutions only.
+        """
+        x = F.relu(self.conv1_3x3(self.padding_3x3(input)))
+        x = F.relu(self.conv2_3x3(self.padding_3x3(x)))
         x = F.relu(self.conv3_1x1(x))
         x = self.drop1(x)
 

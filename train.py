@@ -33,11 +33,11 @@ import argparse
 from Logging import log
 
 
-def TrainSuperResNet(batch_size, epochs, input_list, target_list):
+def TrainSuperResNet(batch_size, epochs, input_list, target_list, model_path, checkpoint_path=None):
     """
     """
-    #TODO: transformer
-    #TODO: cuda
+    # TODO: transformer
+    # TODO: cuda
 
     use_gpu = torch.cuda.is_available()
 
@@ -86,7 +86,12 @@ if __name__ == '__main__':
     parser.add_argument('--input_list', help='Input list',
                         type=str, required=True)
     parser.add_argument('--target_list', help='Target list',
-                        type=str, required=True)
+                        type=str, required=True)    
+    parser.add_argument('--model_path', help='Path to save the model',
+                        type=str, required=True)                    
+    parser.add_argument('--checkpoint_path', help='Checkpoint path to train from a trained model',
+                        type=str, required=False)
+
     args = parser.parse_args()
 
     log.info("Configs")
@@ -94,6 +99,9 @@ if __name__ == '__main__':
     log.info("Epochs: {}".format(args.epochs))
     log.info("Input List: {}".format(args.input_list))
     log.info("Target List: {}".format(args.target_list))
+    log.info("Model Path: {}".format(args.model_path))
+    log.info("Checkpoint path: {}".format(args.checkpoint_path))
 
-    TrainSuperResNet(batch_size=args.batch_size, epochs=args.epochs,
-                     input_list=args.input_list, target_list=args.target_list)
+    # TrainSuperResNet(batch_size=args.batch_size, epochs=args.epochs,
+    #                  input_list=args.input_list, target_list=args.target_list,
+    #                  model_path=args.model_path, checkpoint_path=args.checkpoint_path)
