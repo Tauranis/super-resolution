@@ -55,16 +55,21 @@ class SuperResNet(torch.nn.Module):
 
         self.padding_3x3 = torch.nn.ZeroPad2d(1)
 
+        self.train = True
+
     def forward(self, input):
         """
         Perform network forwarding
 
         OBS: padding is applied on 3x3 convolutions only.
         """
+        
         x = F.relu(self.conv1_3x3(self.padding_3x3(input)))
         x = F.relu(self.conv2_3x3(self.padding_3x3(x)))
         x = F.relu(self.conv3_1x1(x))
-        x = self.drop1(x)
+        
+        if self.train:
+            x = self.drop1(x)
 
         # x = F.relu(self.conv4_3x3(x))
         # x = F.relu(self.conv5_3x3(x))
@@ -73,15 +78,22 @@ class SuperResNet(torch.nn.Module):
 
         return x
 
+    @property
+    def train(self):
+        return self.__train
+
+    @train.setter
+    def train(self, value):
+        self.__train = value
+    
 
 def main():
 
     srn = SuperResNet()
     #OBS: Pytorch is channels first (batch_size,n_channels,width,height)
     input_sample = Variable(torch.from_numpy(
-        np.random.rand(1, 3,300, 300)).float(), requires_grad=False)
-
-    output = srn.forward(input_sample)
+        np.random.rand(1, 3,300, 300)), requires_grad=False).double()
+    output = srn.double().forward(input_sample)
     log.info(output.size())
 
 

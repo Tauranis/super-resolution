@@ -40,26 +40,29 @@ class DatasetReader(Dataset):
     Dataset reader
     """
 
-    def __init__(self, datasetInputFile, datasetTargetFile, transformer=None):
+    def __init__(self, input_list, target_list, transformer=None):
 
         self.transformer = transformer
 
-        with open(datasetInputFile, 'r') as fList:
-            lines = [line.strip() for line in fList.readlines()]
-            input_len = len(lines)
-            self.input = lines
+        # with open(datasetInputFile, 'r') as fList:
+        #     lines = [line.strip() for line in fList.readlines()]
+        #     input_len = len(lines)
+        #     self.input = lines
 
-        with open(datasetTargetFile, 'r') as fList:
-            lines = [line.strip() for line in fList.readlines()]
-            target_len = len(lines)
-            self.target = lines
+        # with open(datasetTargetFile, 'r') as fList:
+        #     lines = [line.strip() for line in fList.readlines()]
+        #     target_len = len(lines)
+        #     self.target = lines
 
-        if input_len != target_len:
+        self.input = input_list
+        self.target = target_list
+
+        if len(self.input) != len(target_list):
             raise Exception(
                 "The number of input images mismatch the number of target images")
             self.dataset_len = -1
         else:
-            self.dataset_len = input_len
+            self.dataset_len = len(self.input)
 
     def __len__(self):
         return self.dataset_len
@@ -68,12 +71,7 @@ class DatasetReader(Dataset):
 
         # Read images
         X_np = cv2.imread(self.input[index])
-        Y_np = cv2.imread(self.target[index])
-
-        #TODO: remover o resize, é só teste
-        #X_np =  cv2.resize(X_np,(300,300))
-        Y_np =  cv2.resize(Y_np,(296,296))
-        
+        Y_np = cv2.imread(self.target[index])        
         
         # Transform image from [0-255] to [-1,1]
         X_np = (X_np.astype(np.float)/255 - 0.5)*2
@@ -91,6 +89,7 @@ class DatasetReader(Dataset):
         # Create tensors
         X_tensor = torch.from_numpy(X_np)
         Y_tensor = torch.from_numpy(Y_np)
+        #print(X_tensor.type())
 
         return X_tensor, Y_tensor
 
