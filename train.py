@@ -90,6 +90,7 @@ def get_image_list(dir_path):
             
             if f.strip().endswith(EXTENSIONS):
                 img_list.append(os.path.join(root,f.strip()))
+    img_list.sort()
     return img_list
 
 
@@ -119,7 +120,7 @@ if __name__ == '__main__':
     log.info("Model Path: {}".format(args.model_path))
 
     input_list = get_image_list(args.input_dir)
-    target_list = get_image_list(args.target_dir)   
+    target_list = get_image_list(args.target_dir)
 
     srn = SuperResNet()
     dataset = DatasetReader(input_list, target_list, None)

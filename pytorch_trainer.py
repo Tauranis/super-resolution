@@ -455,7 +455,14 @@ class PrintCallback(Callback):
         n_train = len(metrics['train']['losses'])
         print('Stop training at epoch: {}/{}'.format(n_train, self.trainer.last_epoch + n_epochs))
 
+    # def on_batch_begin(self, epoch, batch, mb_size):
+    #     print("Epoch {} Batch {}".format(epoch,batch))
+    
+    # def on_batch_end(self, epoch, batch, y_pred, y_true, loss):
+    #     print("Epoch {} Batch {} Loss {}".format(epoch,batch,loss.data.cpu()[0]))
+
     def on_epoch_begin(self, epoch, metrics):
+        print("Beggining epoch {}".format(epoch))
         self.t0 = time.time()
 
     def on_epoch_end(self, epoch, metrics):
