@@ -37,7 +37,7 @@ class SuperResNet(torch.nn.Module):
     Super Resolution Network
     """
 
-    def __init__(self):
+    def __init__(self, train=True):
         """
         Create conv layers
         """
@@ -55,7 +55,7 @@ class SuperResNet(torch.nn.Module):
 
         self.padding_3x3 = torch.nn.ZeroPad2d(1)
 
-        self.train = True
+        self.train = train
 
     def forward(self, input):
         """

@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     cap = cv2.VideoCapture(0)
 
-    srn = SuperResNet()
+    srn = SuperResNet(train=False)
     metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
     pytt.load_trainer_state(args.model_path, srn, metrics)
 

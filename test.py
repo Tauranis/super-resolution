@@ -61,7 +61,7 @@ if __name__ == '__main__':
     input_list = get_image_list(args.input_dir)
     target_list = get_image_list(args.target_dir)
 
-    srn = SuperResNet()
+    srn = SuperResNet(train=False)
     dataset = DatasetReader(input_list, target_list, None)
     train_loader = DataLoader(
         dataset=dataset, batch_size=args.batch_size, shuffle=True)
