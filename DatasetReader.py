@@ -34,6 +34,8 @@ import cv2
 import pandas as pd
 
 from Logging import log
+import utils
+
 
 class DatasetReader(Dataset):
     """
@@ -71,15 +73,15 @@ class DatasetReader(Dataset):
 
         # Read images
         X_np = cv2.imread(self.input[index])
-        Y_np = cv2.imread(self.target[index])        
-        
+        Y_np = cv2.imread(self.target[index])
+
         # Transform image from [0-255] to [-1,1]
-        X_np = (X_np.astype(np.float)/255 - 0.5)*2
-        Y_np = (Y_np.astype(np.float)/255 - 0.5)*2 
+        X_np = (X_np.astype(np.float) / 255 - 0.5) * 2
+        Y_np = (Y_np.astype(np.float) / 255 - 0.5) * 2
 
         # Swap channels
-        X_np = np.rollaxis(X_np,2,0)
-        Y_np = np.rollaxis(Y_np,2,0)
+        X_np = np.rollaxis(X_np, 2, 0)
+        Y_np = np.rollaxis(Y_np, 2, 0)
 
         # Transform images
         if self.transformer is not None:
@@ -89,26 +91,28 @@ class DatasetReader(Dataset):
         # Create tensors
         X_tensor = torch.from_numpy(X_np)
         Y_tensor = torch.from_numpy(Y_np)
-        #print(X_tensor.type())
+        # print(X_tensor.type())
 
         return X_tensor, Y_tensor
 
     def get_image_shape(self):
-        X,Y = self[0]
-        return X.size(),Y.size()
+        X, Y = self[0]
+        return X.size(), Y.size()
 
 
 def main():
-    dataset = DatasetReader(
-        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/vgg_flowers/input_list.txt",
-        "/home/rodrigo/unicamp/IA368Z/trab-final/dataset/vgg_flowers/target_list.txt")
+
+    input_list = utils.get_image_list("/media/rodrigo/c6e79420-ed98-4730-96f6-ff18c884341d/Rodrigo/Unicamp/IA368Z/trab-final/dataset/300x300_cr90")
+    target_list = utils.get_image_list("/media/rodrigo/c6e79420-ed98-4730-96f6-ff18c884341d/Rodrigo/Unicamp/IA368Z/trab-final/dataset/300x300_cr0")
+
+    dataset = DatasetReader(input_list,target_list)
 
     log.info("Dataset size: {}".format(len(dataset)))
 
     log.info("Accessing single sample")
     log.info(dataset[0][0].shape)
     log.info(dataset[0][1].shape)
-    log.info(dataset[0][0][0,0,0])
+    log.info(dataset[0][0][0, 0, 0])
 
     log.info("Accessing via Dataloader")
 
@@ -116,12 +120,12 @@ def main():
         dataset, batch_size=1, shuffle=True)
 
     log.info(dataset.get_image_shape())
-   
 
     # for batch in train_loader:
     #     x_train, y_train = batch
     #     log.info(x_train.shape)
     #     log.info(y_train.shape)
+
 
 if __name__ == "__main__":
     main()

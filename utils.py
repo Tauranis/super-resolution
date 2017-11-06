@@ -22,3 +22,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+import os
+
+EXTENSIONS = ('.jpg', '.JPG', '.jpeg', '.JPEG', 'png', 'PNG')
+
+
+def get_image_list(dir_path):
+    """
+    Return list of image paths from a directory
+    """
+    img_list = []
+    for root, dirs, files in os.walk(dir_path):
+        for f in files:
+
+            if f.strip().endswith(EXTENSIONS):
+                img_list.append(os.path.join(root, f.strip()))
+    img_list.sort()
+    return img_list
