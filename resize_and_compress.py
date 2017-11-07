@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # MIT License
 
 # Copyright (c) 2017 Tauranis
@@ -62,10 +59,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # log.info("Input path: {}".format(args.input_path))
-    # log.info("Output path: {}".format(args.output_path))
-    # log.info("(width,height): ({},{})".format(args.width, args.height))
-    # log.info("Compression rate: {}%".format(args.cr))
+    log.info("Input path: {}".format(args.input_path))
+    log.info("Output path: {}".format(args.output_path))
+    log.info("(width,height): ({},{})".format(args.width, args.height))
+    log.info("Compression rate: {}%".format(args.cr))
 
     if args.input_path.lower().endswith("jpg"):
         resize_and_compress(args.input_path, args.output_path, args.width, args.height, args.cr)
