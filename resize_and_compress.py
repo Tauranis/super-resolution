@@ -28,6 +28,7 @@ import os
 
 import argparse
 from Logging import log
+from utils import EXTENSIONS
 
 
 def resize_and_compress(input_path, output_path, width, height, compression_rate):
@@ -62,10 +63,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # log.info("Input path: {}".format(args.input_path))
+    log.info("Input path: {}".format(args.input_path))
     # log.info("Output path: {}".format(args.output_path))
     # log.info("(width,height): ({},{})".format(args.width, args.height))
     # log.info("Compression rate: {}%".format(args.cr))
 
-    if args.input_path.lower().endswith("jpg"):
+    if args.input_path.lower().endswith(EXTENSIONS):
         resize_and_compress(args.input_path, args.output_path, args.width, args.height, args.cr)
