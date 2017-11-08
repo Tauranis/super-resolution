@@ -64,6 +64,7 @@ class DeepNetTrainer(object):
         self.use_gpu = use_gpu
         if use_gpu == 'auto':
             self.use_gpu = torch.cuda.is_available()
+            log.info("GPU activated")
 
         if self.use_gpu:
             self.model = self.model.cuda().double()

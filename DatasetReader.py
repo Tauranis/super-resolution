@@ -75,9 +75,9 @@ class DatasetReader(Dataset):
         X_np = cv2.imread(self.input[index])
         Y_np = cv2.imread(self.target[index])
 
-        # Transform image from [0-255] to [-1,1]
-        X_np = (X_np.astype(np.float) / 255 - 0.5) * 2
-        Y_np = (Y_np.astype(np.float) / 255 - 0.5) * 2
+        # Transform image from [0-255] to [0,1]
+        X_np = X_np.astype(np.float)/255.0
+        Y_np = Y_np.astype(np.float)/255.0
 
         # Swap channels
         X_np = np.rollaxis(X_np, 2, 0)
