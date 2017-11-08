@@ -31,10 +31,12 @@ import torch.optim as optim
 from SuperResNet import SuperResNet
 import argparse
 from Logging import log
+from utils import EXTENSIONS, get_image_list
 
 from pytorch_trainer import DeepNetTrainer
 from pytorch_trainer import ModelCheckpoint, PrintCallback
 import os
+
 
 def TrainSuperResNet(batch_size, epochs, input_list, target_list, model_path, checkpoint_path=None):
     """
@@ -78,23 +80,6 @@ def TrainSuperResNet(batch_size, epochs, input_list, target_list, model_path, ch
                 e, batch_idx, loss.data[0]))
 
 
-EXTENSIONS = ('.jpg','.JPG','.jpeg','.JPEG','png','PNG')
-
-def get_image_list(dir_path):
-    """
-    Return list of image paths from a directory
-    """
-    img_list = []
-    for root, dirs, files in os.walk(dir_path):
-        for f in files:
-            
-            if f.strip().endswith(EXTENSIONS):
-                img_list.append(os.path.join(root,f.strip()))
-    img_list.sort()
-    return img_list
-
-
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -106,10 +91,10 @@ if __name__ == '__main__':
     parser.add_argument('--input_dir', help='Input list',
                         type=str, required=True)
     parser.add_argument('--target_dir', help='Target list',
-                        type=str, required=True)    
+                        type=str, required=True)
     parser.add_argument('--model_path', help='Path to save the model',
-                        type=str, required=True)                    
-    
+                        type=str, required=True)
+
     args = parser.parse_args()
 
     log.info("Configs")
@@ -128,16 +113,16 @@ if __name__ == '__main__':
         dataset=dataset, batch_size=args.batch_size, shuffle=True)
 
     optimizer = optim.Adam(srn.parameters(), lr=1e-3,
-                          betas=(0.9, 0.999), eps=1e-8, weight_decay=0)
+                           betas=(0.9, 0.999), eps=1e-8, weight_decay=0)
     loss_fn = torch.nn.MSELoss()
 
     # Callbacks
-    cb_checkpoint = ModelCheckpoint(args.model_path,reset=False,verbose=1)
+    cb_checkpoint = ModelCheckpoint(args.model_path, reset=False, verbose=1)
     cb_print = PrintCallback()
 
-    trainer = DeepNetTrainer(model=srn, criterion=loss_fn, optimizer=optimizer, callbacks=[cb_checkpoint,cb_print], use_gpu='auto')
-    trainer.fit_loader(args.epochs,train_loader,valid_data=None)
-
+    trainer = DeepNetTrainer(model=srn, criterion=loss_fn, optimizer=optimizer, callbacks=[
+                             cb_checkpoint, cb_print], use_gpu='auto')
+    trainer.fit_loader(args.epochs, train_loader, valid_data=None)
 
     # TrainSuperResNet(batch_size=args.batch_size, epochs=args.epochs,
     #                  input_list=args.input_list, target_list=args.target_list,
