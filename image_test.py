@@ -22,3 +22,44 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+
+import cv2
+import numpy as np
+import torch
+import pytorch_trainer as pytt
+import argparse
+from SuperResNet import SuperResNet
+from torch.autograd import Variable
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        prog="SuperResNet", description="Super Resolution CNN camera test")
+    parser.add_argument('--model_path', help='Model path',
+                        type=str, required=True)
+    parser.add_argument('--img_path', help='Image path',
+                        type=str, required=True)                     
+    args = parser.parse_args()
+    srn = SuperResNet()
+    
+    metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
+    pytt.load_trainer_state(args.model_path, srn, metrics)
+    srn.eval()
+
+    frame = cv2.imread(args.img_path).astype(np.float64)
+
+    # Preprocess frame
+    frame /= 255.0
+    frame = np.rollaxis(frame, 2, 0)
+    frame_tensor = torch.from_numpy(frame).unsqueeze(0).float()
+
+    # Predict
+    predict = pytt.predict(srn, frame_tensor)
+    frame_predict = np.rollaxis(np.squeeze(predict.numpy()), 0, 3)
+    
+    # Normalize prediction into [0,255]
+    frame_predict = (np.floor(frame_predict * 255)).astype(np.uint8)
+
+    output_path = '.'.join(args.img_path.split(".")[0:-1])+"_cnn."+args.img_path.split(".")[-1]
+    cv2.imwrite(output_path,frame_predict)

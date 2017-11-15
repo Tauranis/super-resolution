@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         prog="SuperResNet", description="Super Resolution CNN camera test")
-    parser.add_argument('--model_path', help='Path to save the model',
+    parser.add_argument('--model_path', help='Path to the saved model',
                         type=str, required=True)
     args = parser.parse_args()
 

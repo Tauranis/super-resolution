@@ -28,6 +28,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.nn.modules import padding
 import numpy as np
+from torchvision.models import vgg
 
 from Logging import log
 
@@ -48,11 +49,6 @@ class SuperResNet(torch.nn.Module):
         self.conv3_1x1 = torch.nn.Conv2d(10, 3, kernel_size=1)
         self.dropout = torch.nn.Dropout2d(0.3)
 
-        # self.conv4_3x3 = torch.nn.Conv2d(10, 20, kernel_size=3)
-        # self.conv5_3x3 = torch.nn.Conv2d(20, 20, kernel_size=3)
-        # self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
-        # self.drop2 = torch.nn.Dropout2d(0.3)
-
         self.padding_3x3 = torch.nn.ZeroPad2d(1)
 
     def forward(self, input):
@@ -67,18 +63,45 @@ class SuperResNet(torch.nn.Module):
         x = F.relu(self.conv3_1x1(x))
 
         x = self.dropout(x)
-        
+    
+        return x
 
-        # x = F.relu(self.conv4_3x3(x))
-        # x = F.relu(self.conv5_3x3(x))
-        # x = F.relu(self.conv6_1x1(x))
-        # x = self.drop2(x)
+class SuperResNetVGG16(torch.nn.Module):
+    """
+    Super Resolution Network
+    """
+
+    def __init__(self):
+        """
+        Create conv layers
+        """
+        super(SuperResNetVGG16, self).__init__()
+
+        self.vgg = vgg.vgg16(pretrained=True)
+        self.conv3_1x1 = torch.nn.Conv2d(64, 3, kernel_size=1)
+
+
+        #self.padding_3x3 = torch.nn.ZeroPad2d(1)
+
+    def forward(self, input):
+        """
+        Perform network forwarding
+
+        OBS: padding is applied on 3x3 convolutions only.
+        """   
+        x = self.vgg.features[0](input)
+        x = self.vgg.features[1](x)
+        x = self.vgg.features[2](x)
+        x = self.vgg.features[3](x)
+        x = self.conv3_1x1(x)
 
         return x
 
+
 def main():
 
-    srn = SuperResNet()
+    #srn = SuperResNet()
+    srn = SuperResNetVGG16()
     # OBS: Pytorch is channels first (batch_size,n_channels,width,height)
     input_sample = Variable(torch.from_numpy(
         np.random.rand(1, 3, 300, 300)), requires_grad=False).double()
