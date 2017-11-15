@@ -42,9 +42,11 @@ if __name__ == '__main__':
 
     cap = cv2.VideoCapture(0)
 
-    srn = SuperResNet(train=False)
+    srn = SuperResNet()
+    
     metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
     pytt.load_trainer_state(args.model_path, srn, metrics)
+    srn.eval()
 
     while (True):
         ret, input_frame = cap.read()
@@ -52,17 +54,16 @@ if __name__ == '__main__':
         frame = np.copy(input_frame).astype(np.float64)
 
         # Preprocess frame
-        frame /= 255
-        frame = (frame - 0.5) * 2
+        frame /= 255.0
         frame = np.rollaxis(frame, 2, 0)
         frame_tensor = torch.from_numpy(frame).unsqueeze(0).float()
 
         # Predict
         predict = pytt.predict(srn, frame_tensor)
         frame_predict = np.rollaxis(np.squeeze(predict.numpy()), 0, 3)
-        print(frame_predict[100,100,1])
+        
         # Normalize prediction into [0,255]
-        frame_predict = (((frame_predict / 2) + 0.5) * 255).astype(np.uint8)
+        frame_predict = (np.floor(frame_predict * 255)).astype(np.uint8)
         #print("min {} max {}".format(np.amin(frame_predict),np.amax(frame_predict)))
         #print("{} {}".format(input_frame[0,0,0],frame_predict[0,0,0]))
 

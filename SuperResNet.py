@@ -37,7 +37,7 @@ class SuperResNet(torch.nn.Module):
     Super Resolution Network
     """
 
-    def __init__(self, train=True):
+    def __init__(self):
         """
         Create conv layers
         """
@@ -46,16 +46,14 @@ class SuperResNet(torch.nn.Module):
         self.conv1_3x3 = torch.nn.Conv2d(3, 10, kernel_size=3)
         self.conv2_3x3 = torch.nn.Conv2d(10, 10, kernel_size=3)
         self.conv3_1x1 = torch.nn.Conv2d(10, 3, kernel_size=1)
-        self.drop1 = torch.nn.Dropout2d(0.3)
+        self.dropout = torch.nn.Dropout2d(0.3)
 
-        self.conv4_3x3 = torch.nn.Conv2d(10, 20, kernel_size=3)
-        self.conv5_3x3 = torch.nn.Conv2d(20, 20, kernel_size=3)
-        self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
-        self.drop2 = torch.nn.Dropout2d(0.3)
+        # self.conv4_3x3 = torch.nn.Conv2d(10, 20, kernel_size=3)
+        # self.conv5_3x3 = torch.nn.Conv2d(20, 20, kernel_size=3)
+        # self.conv6_1x1 = torch.nn.Conv2d(20, 30, kernel_size=1)
+        # self.drop2 = torch.nn.Dropout2d(0.3)
 
         self.padding_3x3 = torch.nn.ZeroPad2d(1)
-
-        self.train = train
 
     def forward(self, input):
         """
@@ -68,8 +66,8 @@ class SuperResNet(torch.nn.Module):
         x = F.relu(self.conv2_3x3(self.padding_3x3(x)))
         x = F.relu(self.conv3_1x1(x))
 
-        if self.train:
-            x = self.drop1(x)
+        x = self.dropout(x)
+        
 
         # x = F.relu(self.conv4_3x3(x))
         # x = F.relu(self.conv5_3x3(x))
@@ -77,15 +75,6 @@ class SuperResNet(torch.nn.Module):
         # x = self.drop2(x)
 
         return x
-
-    @property
-    def train(self):
-        return self.__train
-
-    @train.setter
-    def train(self, value):
-        self.__train = value
-
 
 def main():
 

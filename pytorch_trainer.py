@@ -122,7 +122,7 @@ class DeepNetTrainer(object):
                 epo_batches = 0
                 epo_loss = 0
 
-                self.model.train = True
+                self.model.train()
                 if self.scheduler is not None:
                     self.scheduler.step()
 
@@ -168,7 +168,7 @@ class DeepNetTrainer(object):
                     epo_batches = 0
                     epo_loss = 0
 
-                    self.model.train = False
+                    self.model.eval()
 
                     # for each minibatch
                     for curr_batch, (X, Y) in enumerate(valid_data):
@@ -459,8 +459,8 @@ class PrintCallback(Callback):
     # def on_batch_begin(self, epoch, batch, mb_size):
     #     print("Epoch {} Batch {}".format(epoch,batch))
     
-    # def on_batch_end(self, epoch, batch, y_pred, y_true, loss):
-    #     print("Epoch {} Batch {} Loss {}".format(epoch,batch,loss.data.cpu()[0]))
+    def on_batch_end(self, epoch, batch, y_pred, y_true, loss):
+        print("Epoch {} Batch {} Loss {}".format(epoch,batch,loss.data.cpu()[0]))
 
     def on_epoch_begin(self, epoch, metrics):
         print("Beggining epoch {}".format(epoch))

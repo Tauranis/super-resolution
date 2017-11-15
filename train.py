@@ -38,48 +38,6 @@ from pytorch_trainer import ModelCheckpoint, PrintCallback
 import os
 
 
-def TrainSuperResNet(batch_size, epochs, input_list, target_list, model_path, checkpoint_path=None):
-    """
-    """
-    # TODO: transformer
-    # TODO: cuda
-
-    use_gpu = torch.cuda.is_available()
-
-    model = SuperResNet()
-    if use_gpu:
-        model = model.cuda()
-
-    dataset = DatasetReader(input_list, target_list, None)
-    train_loader = DataLoader(
-        dataset=dataset, batch_size=batch_size, shuffle=True)
-
-    optimzer = optim.Adam(model.parameters(), lr=1e-3,
-                          betas=(0.9, 0.999), eps=1e-8, weight_decay=0)
-    loss_fn = torch.nn.MSELoss()
-
-    for e in range(epochs):
-        for batch_idx, (input_batch, target) in enumerate(train_loader):
-
-            if use_gpu:
-                input_batch = input_batch.cuda()
-                target = target.cuda()
-
-            input_batch = Variable(input_batch.float(), requires_grad=False)
-            #log.info("Input shape: {}".format(input_batch.size()))
-            target = Variable(target.float(), requires_grad=False)
-
-            Y_pred = model(input_batch)
-            loss = loss_fn(Y_pred, target)
-
-            optimzer.zero_grad()
-            loss.backward()
-            optimzer.step()
-
-            log.info("Epoch: {} Batch ID: {} Loss: {}".format(
-                e, batch_idx, loss.data[0]))
-
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
