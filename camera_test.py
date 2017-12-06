@@ -15,7 +15,7 @@
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS O
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -29,7 +29,7 @@ import numpy as np
 import torch
 import pytorch_trainer as pytt
 import argparse
-from SuperResNet import SuperResNet
+from SuperResNet import SuperResNet, SuperResNetVGG16
 from torch.autograd import Variable
 
 if __name__ == '__main__':
@@ -42,7 +42,8 @@ if __name__ == '__main__':
 
     cap = cv2.VideoCapture(0)
 
-    srn = SuperResNet()
+    #srn = SuperResNet()
+    srn = SuperResNetVGG16(False)
     
     metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
     pytt.load_trainer_state(args.model_path, srn, metrics)

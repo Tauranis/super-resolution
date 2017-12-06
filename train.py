@@ -28,7 +28,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import torch
 import torch.optim as optim
-from SuperResNet import SuperResNet
+from SuperResNet import SuperResNet, SuperResNetVGG16
 import argparse
 from Logging import log
 from utils import EXTENSIONS, get_image_list
@@ -46,10 +46,14 @@ if __name__ == '__main__':
                         type=int, required=True)
     parser.add_argument('--epochs', help='Training epochs',
                         type=int, required=True)
-    parser.add_argument('--input_dir', help='Input list',
+    parser.add_argument('--train_input_dir', help='Input list',
                         type=str, required=True)
-    parser.add_argument('--target_dir', help='Target list',
+    parser.add_argument('--train_target_dir', help='Target list',
                         type=str, required=True)
+    parser.add_argument('--eval_input_dir', help='Input list',
+                        type=str, required=True)
+    parser.add_argument('--eval_target_dir', help='Target list',
+                        type=str, required=True)                        
     parser.add_argument('--model_path', help='Path to save the model',
                         type=str, required=True)
 
@@ -58,17 +62,27 @@ if __name__ == '__main__':
     log.info("Configs")
     log.info("Batch Size: {}".format(args.batch_size))
     log.info("Epochs: {}".format(args.epochs))
-    log.info("Input List: {}".format(args.input_dir))
-    log.info("Target List: {}".format(args.target_dir))
+    log.info("Train Input List: {}".format(args.train_input_dir))
+    log.info("Train Target List: {}".format(args.train_target_dir))
+    log.info("Eval Input List: {}".format(args.eval_input_dir))
+    log.info("Eval Target List: {}".format(args.eval_target_dir))
     log.info("Model Path: {}".format(args.model_path))
 
-    input_list = get_image_list(args.input_dir)
-    target_list = get_image_list(args.target_dir)
+    train_input_list = get_image_list(args.train_input_dir)
+    train_target_list = get_image_list(args.train_target_dir)
 
-    srn = SuperResNet()
-    dataset = DatasetReader(input_list, target_list, None)
+    eval_input_list = get_image_list(args.eval_input_dir)
+    eval_target_list = get_image_list(args.eval_target_dir)
+
+    train_set = DatasetReader(train_input_list, train_target_list, None)
+    eval_set = DatasetReader(eval_input_list, eval_target_list, None)
     train_loader = DataLoader(
-        dataset=dataset, batch_size=args.batch_size, shuffle=True)
+        dataset=train_set, batch_size=args.batch_size, shuffle=True)
+    eval_loader = DataLoader(
+        dataset=train_set, batch_size=args.batch_size, shuffle=True)
+
+    #srn = SuperResNet()
+    srn = torch.nn.DataParallel(SuperResNetVGG16()).cuda()
 
     optimizer = optim.Adam(srn.parameters(), lr=1e-3,
                            betas=(0.9, 0.999), eps=1e-8, weight_decay=0)
@@ -80,7 +94,7 @@ if __name__ == '__main__':
 
     trainer = DeepNetTrainer(model=srn, criterion=loss_fn, optimizer=optimizer, callbacks=[
                              cb_checkpoint, cb_print], use_gpu='auto')
-    trainer.fit_loader(args.epochs, train_loader, valid_data=None)
+    trainer.fit_loader(args.epochs, train_loader, valid_data=eval_loader)
 
     # TrainSuperResNet(batch_size=args.batch_size, epochs=args.epochs,
     #                  input_list=args.input_list, target_list=args.target_list,

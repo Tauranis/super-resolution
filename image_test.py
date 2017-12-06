@@ -29,7 +29,7 @@ import numpy as np
 import torch
 import pytorch_trainer as pytt
 import argparse
-from SuperResNet import SuperResNet
+from SuperResNet import SuperResNet, SuperResNetVGG16
 from torch.autograd import Variable
 
 if __name__ == '__main__':
@@ -41,12 +41,14 @@ if __name__ == '__main__':
     parser.add_argument('--img_path', help='Image path',
                         type=str, required=True)                     
     args = parser.parse_args()
-    srn = SuperResNet()
+    #srn = SuperResNet()
+    srn = SuperResNetVGG16(_pretrained=False)
     
     metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
     pytt.load_trainer_state(args.model_path, srn, metrics)
     srn.eval()
 
+    print(args.img_path)
     frame = cv2.imread(args.img_path).astype(np.float64)
 
     # Preprocess frame

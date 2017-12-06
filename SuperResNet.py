@@ -71,13 +71,13 @@ class SuperResNetVGG16(torch.nn.Module):
     Super Resolution Network
     """
 
-    def __init__(self):
+    def __init__(self,_pretrained = True):
         """
         Create conv layers
         """
         super(SuperResNetVGG16, self).__init__()
 
-        vgg_full = vgg.vgg16(pretrained=True)
+        vgg_full = vgg.vgg16(pretrained=_pretrained)
         self.vgg_conv = torch.nn.Sequential(vgg_full.features[0],vgg_full.features[1],vgg_full.features[2],vgg_full.features[3])
         self.conv3_1x1 = torch.nn.Conv2d(64, 3, kernel_size=1)
         del vgg_full
@@ -92,8 +92,8 @@ class SuperResNetVGG16(torch.nn.Module):
         OBS: padding is applied on 3x3 convolutions only.
         """   
         x = self.vgg_conv(input)
-        x = self.conv3_1x1(x)
-
+        x = torch.clamp(self.conv3_1x1(x),0,1)
+        
         return x
 
 
