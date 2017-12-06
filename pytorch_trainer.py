@@ -323,8 +323,8 @@ def save_trainer_state(file_basename, model, metrics):
 
 
 def predict(model, Xin):
-    y_pred = model.forward(Variable(Xin))
-    return y_pred.data
+    y_pred = model.forward(Variable(Xin).cuda())
+    return y_pred.data.cpu()
 
 
 def predict_classes(model, Xin):

@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         type=str, required=True)                     
     args = parser.parse_args()
     #srn = SuperResNet()
-    srn = SuperResNetVGG16(_pretrained=False)
+    srn = torch.nn.DataParallel(SuperResNetVGG16(_pretrained=False)).cuda()
     
     metrics = dict(train=dict(losses=[]), valid=dict(losses=[]))
     pytt.load_trainer_state(args.model_path, srn, metrics)
