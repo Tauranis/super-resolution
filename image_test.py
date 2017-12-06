@@ -31,6 +31,7 @@ import pytorch_trainer as pytt
 import argparse
 from SuperResNet import SuperResNet, SuperResNetVGG16
 from torch.autograd import Variable
+from utils import get_image_list
 
 if __name__ == '__main__':
 
@@ -38,8 +39,10 @@ if __name__ == '__main__':
         prog="SuperResNet", description="Super Resolution CNN camera test")
     parser.add_argument('--model_path', help='Model path',
                         type=str, required=True)
-    parser.add_argument('--img_path', help='Image path',
-                        type=str, required=True)                     
+    parser.add_argument('--input_dir', help='Input dir',
+                        type=str, required=True)
+    parser.add_argument('--target_dir', help='Target dir',
+                        type=str, required=True)
     args = parser.parse_args()
     #srn = SuperResNet()
     srn = torch.nn.DataParallel(SuperResNetVGG16(_pretrained=False)).cuda()
@@ -48,20 +51,23 @@ if __name__ == '__main__':
     pytt.load_trainer_state(args.model_path, srn, metrics)
     srn.eval()
 
-    print(args.img_path)
-    frame = cv2.imread(args.img_path).astype(np.float64)
+    img_list = get_image_list(args.input_dir)
 
-    # Preprocess frame
-    frame /= 255.0
-    frame = np.rollaxis(frame, 2, 0)
-    frame_tensor = torch.from_numpy(frame).unsqueeze(0).float()
+    for img_path in img_list
+        print(img_path)
+        frame = cv2.imread(img_path).astype(np.float64)
 
-    # Predict
-    predict = pytt.predict(srn, frame_tensor)
-    frame_predict = np.rollaxis(np.squeeze(predict.numpy()), 0, 3)
-    
-    # Normalize prediction into [0,255]
-    frame_predict = (np.floor(frame_predict * 255)).astype(np.uint8)
+        # Preprocess frame
+        frame /= 255.0
+        frame = np.rollaxis(frame, 2, 0)
+        frame_tensor = torch.from_numpy(frame).unsqueeze(0).float()
 
-    output_path = '.'.join(args.img_path.split(".")[0:-1])+"_cnn."+args.img_path.split(".")[-1]
-    cv2.imwrite(output_path,frame_predict)
+        # Predict
+        predict = pytt.predict(srn, frame_tensor)
+        frame_predict = np.rollaxis(np.squeeze(predict.numpy()), 0, 3)
+        
+        # Normalize prediction into [0,255]
+        frame_predict = (np.floor(frame_predict * 255)).astype(np.uint8)
+
+        output_path = os.path.join(args.target_dir,"")+'.'.join(img_path.split(".")[0:-1])+"_cnn."+img_path.split(".")[-1]
+        cv2.imwrite(output_path,frame_predict)
