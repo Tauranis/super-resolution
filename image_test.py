@@ -71,4 +71,5 @@ if __name__ == '__main__':
         frame_predict = (np.floor(frame_predict * 255)).astype(np.uint8)
 
         output_path = os.path.join(args.target_dir,"")+'.'.join(img_path.split(".")[0:-1])+"_cnn."+img_path.split(".")[-1]
+        print(output_path)
         cv2.imwrite(output_path,frame_predict)
