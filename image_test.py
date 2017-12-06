@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     img_list = get_image_list(args.input_dir)
 
-    for img_path in img_list
+    for img_path in img_list:
         print(img_path)
         frame = cv2.imread(img_path).astype(np.float64)
 
