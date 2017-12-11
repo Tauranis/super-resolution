@@ -63,11 +63,11 @@ class SuperResNet(torch.nn.Module):
         x = F.relu(self.conv3_1x1(x))
 
         x = self.dropout(x)
-
+    
         return x
 
 
-class SuperResNetVGG16(torch.nn.Module):
+class SuperResNetSuperVGG16(torch.nn.Module):
     """
     Super Resolution Network
     """
@@ -76,7 +76,7 @@ class SuperResNetVGG16(torch.nn.Module):
         """
         Create conv layers
         """
-        super(SuperResNetVGG16, self).__init__()
+        super(SuperResNetSuperVGG16, self).__init__()
 
         vgg_full = vgg.vgg16(pretrained=_pretrained)
         self.vgg_conv = torch.nn.Sequential(vgg_full.features[0], vgg_full.features[1],
@@ -100,10 +100,41 @@ class SuperResNetVGG16(torch.nn.Module):
         return x
 
 
+class SuperResNetVGG16(torch.nn.Module):
+    """
+    Super Resolution Network
+    """
+
+    def __init__(self,_pretrained = True):
+        """
+        Create conv layers
+        """
+        super(SuperResNetVGG16, self).__init__()
+
+        vgg_full = vgg.vgg16(pretrained=_pretrained)
+        self.vgg_conv = torch.nn.Sequential(vgg_full.features[0],vgg_full.features[1],vgg_full.features[2],vgg_full.features[3])
+        self.conv3_1x1 = torch.nn.Conv2d(64, 3, kernel_size=1)
+        del vgg_full
+
+
+        #self.padding_3x3 = torch.nn.ZeroPad2d(1)
+
+    def forward(self, input):
+        """
+        Perform network forwarding
+
+        OBS: padding is applied on 3x3 convolutions only.
+        """   
+        x = self.vgg_conv(input)
+        x = torch.clamp(self.conv3_1x1(x),0,1)
+        
+        return x
+
+
 def main():
 
     #srn = SuperResNet()
-    srn = SuperResNetVGG16()
+    srn = SuperResNetVGG16(_pretrained = True)
     # OBS: Pytorch is channels first (batch_size,n_channels,width,height)
     input_sample = Variable(torch.from_numpy(
         np.random.rand(1, 3, 300, 300)), requires_grad=False).double()

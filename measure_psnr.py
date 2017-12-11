@@ -39,7 +39,8 @@ def measure_psnr(batch_size,input_dir,target_dir,model_path):
     
     # Create model
     #srn = SuperResNetVGG16()
-    srn = SuperResNet().double()
+    #srn = SuperResNet().double()
+    srn = torch.nn.DataParallel(SuperResNetVGG16(_pretrained=False)).cuda()
 
     # Read input and target data into a DataLoader
     input_list = get_image_list(input_dir)
